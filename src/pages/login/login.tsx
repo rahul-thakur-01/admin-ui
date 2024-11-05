@@ -1,7 +1,27 @@
-import { Layout, Card, Space, Form, Input, Checkbox, Button, Flex } from 'antd';
+import { Layout, Card, Space, Form, Input, Checkbox, Button, Flex, Alert } from 'antd';
 import { LockFilled, UserOutlined, LockOutlined } from '@ant-design/icons';
 import Logo from '../../components/Logo';
-export default function login() {
+import { useMutation } from '@tanstack/react-query';
+import { login } from '../../http/api';
+import { Credentials } from '../../types';
+
+const loginUser = async(credentials: Credentials) => {
+    const {data} = await login(credentials);
+    return data;
+}
+
+
+const LoginPage = () => {
+
+    const { mutate, data , isPending , isError, error} = useMutation({
+        mutationKey: ['login'],         // when you want to invalidate the cache, you can use this key
+        mutationFn: loginUser,
+        onSuccess: async (reponseData) => {
+            console.log('Login successful.', reponseData, data);
+        }
+    })
+
+
   return (
         <>
             <Layout style={{ height: '100vh', display: 'grid', placeItems: 'center' }}>
@@ -22,7 +42,15 @@ export default function login() {
                         }>
                         <Form initialValues={{
                             remember: true,
+                        }}
+                        onFinish={(values) => {
+                            mutate({email: values.username, password: values.password});
+                            console.log(values);
                         }}>
+
+                        {
+                            isError && <Alert style={{marginBottom: 24}} type='error' message={error.message}/>
+                        }
                         
                             <Form.Item
                                 name="username"
@@ -61,6 +89,7 @@ export default function login() {
                                     type="primary"
                                     htmlType="submit"
                                     style={{ width: '100%' }}
+                                    loading={isPending}
                                     >
                                     Log in
                                 </Button>
@@ -72,3 +101,5 @@ export default function login() {
         </>
     );
 }
+
+export default LoginPage;
