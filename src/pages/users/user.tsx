@@ -1,10 +1,11 @@
-import { Breadcrumb, Space, Table } from "antd";
-import { RightOutlined } from "@ant-design/icons";
-import { Link, Navigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "../../http/api";
-import { User } from "../../types";
-import { useAuthStore } from "../../store";
+import { Breadcrumb, Space, Table } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
+import { Link, Navigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getUsers } from '../../http/api';
+import { User } from '../../types';
+import { useAuthStore } from '../../store';
+import UsersFilter from './UserFilter';
 
 const columns = [
     {
@@ -34,47 +35,43 @@ const columns = [
         dataIndex: 'role',
         key: 'role',
     },
-    {
-        title: 'Restaurant',
-        dataIndex: 'tenant',
-        key: 'tenant',
-        render: (_text: string, record: User) => {
-            return <div>{record.tenant?.name}</div>;
-        },
-    },
 ];
 
-
-export default function Users() {
-
-
-    const { user } = useAuthStore();
-      if(user?.role !== 'admin'){
-        return <Navigate to={`/`} replace={true} />;
-    }
-
-    const {data: users = [], isLoading, isError, error} = useQuery({
+const Users = () => {
+    const {
+        data: users,
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
         queryKey: ['users'],
-        queryFn: async () => {
-        return getUsers().then((res) => res.data);  // axios returns data in res.data
-        }
+        queryFn: () => {
+            return getUsers().then((res) => res.data);
+        },
     });
 
-  return (
-    <>
-    <Space direction="vertical" size="large" style={{width: '100%'}}>
+    const { user } = useAuthStore();
 
-      <Breadcrumb
-          separator={<RightOutlined />}
-          items={[{ title: <Link to="/">Dashboard</Link> }, { title: 'Users' }]}
-      />
+    if (user?.role !== 'admin') {
+        return <Navigate to="/" replace={true} />;
+    }
 
-      <Table columns={columns} dataSource={users} rowKey="id" />
+    return (
+        <>
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                <Breadcrumb
+                    separator={<RightOutlined />}
+                    items={[{ title: <Link to="/">Dashboard</Link> }, { title: 'Users' }]}
+                />
+                {isLoading && <div>Loading...</div>}
+                {isError && <div>{error.message}</div>}
 
-    </Space>
+                <UsersFilter />
 
-      {isLoading && <div>Loading...</div>}
-      {isError && <div>{error.message}</div>}
-    </>
-)
-}
+                <Table columns={columns} dataSource={users} />
+            </Space>
+        </>
+    );
+};
+
+export default Users;
