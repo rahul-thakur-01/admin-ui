@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { login } from '../../http/api';
 import { self } from '../../http/api';
 import { Credentials } from '../../types';
+import { useAuth, User } from '../../store';
 
 const loginUser = async(credentials: Credentials) => {
     const {data} = await login(credentials);
@@ -18,7 +19,9 @@ const getSelf = async() => {
 
 const LoginPage = () => {
 
-    const {data: selfData, refetch} = useQuery({
+    const {setUser} = useAuth();
+
+    const { refetch } = useQuery({ 
         queryKey: ['self'],
         queryFn: getSelf,
         enabled: false,   // by default it is true it render when the component is mounted
@@ -30,13 +33,12 @@ const LoginPage = () => {
         onSuccess: async (reponseData) => {
             
             // getself
-            refetch();
-            console.log('user data', selfData);
+            const selfDataPromise = await refetch();
+            console.log('selfDataPromise', selfDataPromise);  // return a promise axios response object with data property  
+            setUser(selfDataPromise.data as User);
 
-            // store in the state
-
+            console.log('user data', selfDataPromise);
             console.log('Login successful.', reponseData, data);
-
         }
     })
 
