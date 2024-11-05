@@ -1,8 +1,9 @@
 import { Layout, Card, Space, Form, Input, Checkbox, Button, Flex, Alert } from 'antd';
 import { LockFilled, UserOutlined, LockOutlined } from '@ant-design/icons';
 import Logo from '../../components/Logo';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { login } from '../../http/api';
+import { self } from '../../http/api';
 import { Credentials } from '../../types';
 
 const loginUser = async(credentials: Credentials) => {
@@ -10,14 +11,32 @@ const loginUser = async(credentials: Credentials) => {
     return data;
 }
 
+const getSelf = async() => {
+    const {data} = await self();
+    return data;
+}
 
 const LoginPage = () => {
+
+    const {data: selfData, refetch} = useQuery({
+        queryKey: ['self'],
+        queryFn: getSelf,
+        enabled: false,   // by default it is true it render when the component is mounted
+    });
 
     const { mutate, data , isPending , isError, error} = useMutation({
         mutationKey: ['login'],         // when you want to invalidate the cache, you can use this key
         mutationFn: loginUser,
         onSuccess: async (reponseData) => {
+            
+            // getself
+            refetch();
+            console.log('user data', selfData);
+
+            // store in the state
+
             console.log('Login successful.', reponseData, data);
+
         }
     })
 
