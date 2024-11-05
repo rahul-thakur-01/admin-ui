@@ -6,7 +6,7 @@ import { login } from '../../http/api';
 import { self } from '../../http/api';
 import { logout } from '../../http/api';
 import { Credentials } from '../../types';
-import { useAuth, User } from '../../store';
+import { useAuthStore, User } from '../../store';
 import { userPermission } from '../../hooks/usePermission';
 
 const loginUser = async(credentials: Credentials) => {
@@ -23,7 +23,7 @@ const LoginPage = () => {
 
     const { isAllowed } = userPermission();
 
-    const {setUser, logout: logoutFromStore } = useAuth();
+    const {setUser, logout: logoutFromStore } = useAuthStore();
 
     const { refetch } = useQuery({ 
         queryKey: ['self'],
