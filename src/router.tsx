@@ -1,21 +1,31 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-import Categories from "./pages/Categories";
 import LoginPage from "./pages/login/login"
+import Dashboard from "./layout/Dashboard";
+import NonAuth from "./layout/NonAuth";
 
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <HomePage />
+        element: <Dashboard />,
+        children: [
+            {
+                path: "/",
+                element: <HomePage />
+            }
+        ]
     },
+    
     {
-        path: "/categories",
-        element: <Categories />
-    },
-    {
-        path: '/auth/login',
-        element: <LoginPage />
+        path: "/auth",
+        element: <NonAuth />,
+        children: [
+            {
+            path: '/auth/login',
+            element: <LoginPage />
+            }
+        ]
     }
 ]);
