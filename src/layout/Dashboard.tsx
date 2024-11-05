@@ -39,6 +39,7 @@ const getMenuItems = (role: string) => {
         },
     ];
 
+    // if user is admin, add more menu items to the baseItems
     if (role === 'admin') {
         const menus = [...baseItems];
         menus.splice(1, 0, {
@@ -76,13 +77,15 @@ const Dashboard = () => {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    // call getself
+    // call getself 
     const { user } = useAuthStore();
 
     if (user === null) {
         return <Navigate to={`/auth/login?returnTo=${location.pathname}`} replace={true} />;
     }
-    const items = getMenuItems(user.role);
+
+    // get menu items based on user role and protect routes
+    const items = getMenuItems(user.role); 
 
     return (
         <div>
