@@ -6,5 +6,6 @@ import { Credentials } from '../types';
 
 export const login = async (credentials: Credentials) => api.post('/auth/login', credentials);
 export const self = async () => api.get('/auth/self');
+export const logout = async () => api.post('/auth/logout');
 
 

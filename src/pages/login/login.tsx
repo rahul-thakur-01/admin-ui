@@ -4,8 +4,10 @@ import Logo from '../../components/Logo';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { login } from '../../http/api';
 import { self } from '../../http/api';
+import { logout } from '../../http/api';
 import { Credentials } from '../../types';
 import { useAuth, User } from '../../store';
+import { userPermission } from '../../hooks/usePermission';
 
 const loginUser = async(credentials: Credentials) => {
     const {data} = await login(credentials);
@@ -19,7 +21,9 @@ const getSelf = async() => {
 
 const LoginPage = () => {
 
-    const {setUser} = useAuth();
+    const { isAllowed } = userPermission();
+
+    const {setUser, logout: logoutFromStore } = useAuth();
 
     const { refetch } = useQuery({ 
         queryKey: ['self'],
@@ -34,10 +38,18 @@ const LoginPage = () => {
             
             // getself
             const selfDataPromise = await refetch();
-            console.log('selfDataPromise', selfDataPromise);  // return a promise axios response object with data property  
-            setUser(selfDataPromise.data as User);
+            const userData = selfDataPromise.data as User;
 
-            console.log('user data', selfDataPromise);
+            if(!isAllowed(userData)){
+                await logout();
+                logoutFromStore();
+                return;
+            }
+            // window.location.href = "/";
+
+            setUser(userData as User);
+
+            console.log('selfDataPromise', selfDataPromise);  // return a promise axios response object with data property  
             console.log('Login successful.', reponseData, data);
         }
     })
