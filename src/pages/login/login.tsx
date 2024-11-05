@@ -31,7 +31,17 @@ const LoginPage = () => {
         enabled: false,   // by default it is true it render when the component is mounted
     });
 
-    const { mutate, data , isPending , isError, error} = useMutation({
+    const {mutate: logooutMutate } = useMutation({
+        mutationKey: ['logout'],
+        mutationFn: logout,
+        onSuccess: async () => {
+            logoutFromStore();
+            logoutFromStore();
+            return;
+        }
+    })
+
+    const { mutate, data  , isPending, isError, error} = useMutation({
         mutationKey: ['login'],         // when you want to invalidate the cache, you can use this key
         mutationFn: loginUser,
         onSuccess: async (reponseData) => {
@@ -41,8 +51,7 @@ const LoginPage = () => {
             const userData = selfDataPromise.data as User;
 
             if(!isAllowed(userData)){
-                await logout();
-                logoutFromStore();
+                logooutMutate();
                 return;
             }
             // window.location.href = "/";
