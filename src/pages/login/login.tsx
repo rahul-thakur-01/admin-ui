@@ -20,14 +20,32 @@ export default function login() {
                                 Sign in
                             </Space>
                         }>
-                        <Form>
+                        <Form initialValues={{
+                            remember: true,
+                        }}>
                         
                             <Form.Item
-                                name="username">
+                                name="username"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your Username',
+                                    },
+                                    {
+                                        type: 'email',
+                                        message: 'Email is not valid',
+                                    },
+                                ]}>
                                 <Input prefix={<UserOutlined />} placeholder="Username" />
                             </Form.Item>
                             <Form.Item
-                                name="password">
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your password',
+                                    },
+                                ]}>
                                 <Input.Password prefix={<LockOutlined />} placeholder="Password" />
                             </Form.Item>
                             <Flex justify="space-between">
